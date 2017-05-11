@@ -2,6 +2,7 @@ package me.nixing.xgen.conf;
 
 import java.util.Map;
 
+import me.nixing.xgen.conf.manager.ConfManager;
 import me.nixing.xgen.conf.vo.GenConfModel;
 import me.nixing.xgen.conf.vo.ModuleConfModel;
 /**
@@ -11,17 +12,32 @@ import me.nixing.xgen.conf.vo.ModuleConfModel;
  *
  */
 class GenConfEbo implements GenConfEbi {
+	/**
+	 * 饿汉
+	 */
+	private static GenConfEbo genConfEbo = new GenConfEbo();
+	
+	private GenConfEbo() {
+	}
+	
+	/**
+	 * 提供全局唯一访问点
+	 * @return
+	 */
+	public static GenConfEbo getInstance(){
+		return genConfEbo;
+	}
 	
 	@Override
 	public GenConfModel getGenConf() {
 		System.out.println("getGenConf");
-		return null;
+		return ConfManager.getInstance().getConfModel();
 	}
 	
 	@Override
 	public Map<String, ModuleConfModel> getModuleConfs() {
 		System.out.println("getModuleConfs");
-		return null;
+		return ConfManager.getInstance().getModuleConfs();
 	}
 
 }

@@ -13,7 +13,7 @@ public class GenConfEbiFactory {
 	}
 	
 	public static GenConfEbi createGenConfEbi(){
-		return new GenConfEbo();
+		return GenConfEbo.getInstance();
 	}
 	
 }
