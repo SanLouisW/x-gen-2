@@ -10,15 +10,17 @@ import me.nixing.xgen.conf.vo.ModuleConfModel;
  * @since 1.0.0
  *
  */
-public class GenConfEbo implements GenConfEbi {
+class GenConfEbo implements GenConfEbi {
 	
 	@Override
 	public GenConfModel getGenConf() {
+		System.out.println("getGenConf");
 		return null;
 	}
 	
 	@Override
 	public Map<String, ModuleConfModel> getModuleConfs() {
+		System.out.println("getModuleConfs");
 		return null;
 	}
 
