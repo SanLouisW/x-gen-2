@@ -4,8 +4,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import me.nixing.xgen.conf.providers.GenConfProvider;
+import me.nixing.xgen.conf.providers.ModuleConfProvider;
 import me.nixing.xgen.conf.vo.GenConfModel;
 import me.nixing.xgen.conf.vo.ModuleConfModel;
+import me.nixing.xgen.conf.vo.NeedGenModel;
+import me.nixing.xgen.conf.vo.ThemeModel;
 /**
  * 
  * 解析、缓存、管理配置数据
@@ -53,13 +56,56 @@ public class ConfManager {
 	}
 
 	private void readConf(GenConfProvider confProvider){
-		//解析配置文件
-		System.out.println("解析配置文件");
-		confProvider.getNeedGenModels();
-		confProvider.getThemeModels();
-		confProvider.getConstants();
-		//缓存配置数据
-		System.out.println("缓存配置数据");
+		readGenConf(confProvider);
+		readModulesConf();
 	}
 	
+	private void readGenConf(GenConfProvider provider){
+		confModel.setNeedGens(provider.getNeedGenModels());
+		confModel.setThemes(provider.getThemeModels());
+		confModel.setConstants(provider.getConstants());
+	}
+	
+	private void readModulesConf(){
+		for (NeedGenModel needGenModel : confModel.getNeedGens()) {
+			ModuleConfModel moduleConfModel = readOneModuleConf(needGenModel);
+			moduleConfs.put(moduleConfModel.getModuleId(), moduleConfModel);
+		}
+	}
+	
+	private ModuleConfModel readOneModuleConf(NeedGenModel needGenModel){
+		ModuleConfProvider moduleConfPriver = getModuleConfPriver(needGenModel);
+		ModuleConfModel moduleConfModel = moduleConfPriver.getBaseModuleConfModel();
+		moduleConfModel.setModuleId(needGenModel.getNeedGenId());
+		moduleConfModel.setUseThemeId(needGenModel.getThemeId());
+		moduleConfModel.setNeedGenTypes(moduleConfPriver.getNeedGenTypes());
+		moduleConfModel.setExtendConfs(moduleConfPriver.getExtendConfs());
+		return moduleConfModel;
+	}
+
+	private ModuleConfProvider getModuleConfPriver(NeedGenModel needGenModel) {
+		String moduleProviderClassName = getModuleConfProviderClassName(needGenModel);
+		ModuleConfProvider moduleConfPriver = newInstanceOfModuleConfProvider(moduleProviderClassName);
+		return moduleConfPriver;
+	}
+
+
+	private String getModuleConfProviderClassName(NeedGenModel needGenModel) {
+		String moduleProviderClassName = confModel.getThemeById(needGenModel.getThemeId()).getProviders().get(needGenModel.getProvider());
+		return moduleProviderClassName;
+	}
+	
+	private ModuleConfProvider newInstanceOfModuleConfProvider(String moduleProviderClassName) {
+		ModuleConfProvider moduleConfPriver = null; 
+		try {
+			try {
+				moduleConfPriver = (ModuleConfProvider) Class.forName(moduleProviderClassName).newInstance();
+			} catch (InstantiationException | IllegalAccessException e) {
+				e.printStackTrace();
+			}
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		return moduleConfPriver;
+	}
 }

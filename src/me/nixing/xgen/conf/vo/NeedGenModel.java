@@ -14,7 +14,7 @@ public class NeedGenModel {
 	 */
 	private String needGenId;
 	/**
-	 * 需要生成模块依赖的解析类
+	 * 需要生成模块依赖的解析类id
 	 */
 	private String provider;
 	/**
@@ -25,6 +25,7 @@ public class NeedGenModel {
 	 * 需要生成模块的参数集合
 	 */
 	private Map<String,String> params = new HashMap<>();
+	
 	public String getNeedGenId() {
 		return needGenId;
 	}

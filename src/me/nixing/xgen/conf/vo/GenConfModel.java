@@ -25,6 +25,15 @@ public class GenConfModel {
 	 */
 	private Map<String,String> constants = new HashMap<>();
 	
+	public ThemeModel getThemeById(String id){
+		for (ThemeModel theme : this.themes) {
+			if(theme.getThemeId().equals(id)){
+				return theme;
+			}
+		}
+		return null;
+	}
+	
 	public List<NeedGenModel> getNeedGens() {
 		return needGens;
 	}
