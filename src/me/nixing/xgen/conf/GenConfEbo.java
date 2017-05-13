@@ -3,6 +3,7 @@ package me.nixing.xgen.conf;
 import java.util.Map;
 
 import me.nixing.xgen.conf.manager.ConfManager;
+import me.nixing.xgen.conf.providers.GenConfProvider;
 import me.nixing.xgen.conf.vo.GenConfModel;
 import me.nixing.xgen.conf.vo.ModuleConfModel;
 /**
@@ -13,31 +14,37 @@ import me.nixing.xgen.conf.vo.ModuleConfModel;
  */
 class GenConfEbo implements GenConfEbi {
 	/**
-	 * 饿汉
+	 * 懒汉
 	 */
-	private static GenConfEbo genConfEbo = new GenConfEbo();
+	private static GenConfEbo genConfEbo = null;
 	
-	private GenConfEbo() {
+	private GenConfProvider provider = null;
+	
+	private GenConfEbo(GenConfProvider provider) {
+		this.provider = provider;
 	}
 	
 	/**
 	 * 提供全局唯一访问点
 	 * @return
 	 */
-	public static GenConfEbo getInstance(){
+	public static GenConfEbo getInstance(GenConfProvider provider){
+		if(genConfEbo == null){
+			genConfEbo = new GenConfEbo(provider);
+		}
 		return genConfEbo;
 	}
 	
 	@Override
 	public GenConfModel getGenConf() {
 		System.out.println("getGenConf");
-		return ConfManager.getInstance().getConfModel();
+		return ConfManager.getInstance(this.provider).getConfModel();
 	}
 	
 	@Override
 	public Map<String, ModuleConfModel> getModuleConfs() {
 		System.out.println("getModuleConfs");
-		return ConfManager.getInstance().getModuleConfs();
+		return ConfManager.getInstance(this.provider).getModuleConfs();
 	}
 
 }
